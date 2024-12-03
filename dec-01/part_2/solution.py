@@ -15,6 +15,8 @@ def parse_input():
         list_1.append(int(items[0]))
         list_2.append(int(items[1]))
 
+    file.close()
+
     return list_1, list_2
 
 def calculate_similarity_score(list_1, list_2):

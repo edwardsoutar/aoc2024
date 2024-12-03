@@ -16,6 +16,8 @@ def parse_reports():
 
         reports.append(report)
 
+    file.close()
+
     return reports
 
 def check_report_safe(report):
