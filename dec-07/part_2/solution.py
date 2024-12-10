@@ -30,6 +30,7 @@ def check_equation_is_valid(equation):
 
             values.append(base * value)
             values.append(base + value)
+            values.append(int(str(base) + str(value)))
     
     return target in values
 
