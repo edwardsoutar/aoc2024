@@ -15,6 +15,20 @@ def parse_input():
 
     return arrangement
 
+def count_sides(edges):
+    sides = 0
+
+    for edge in edges.values():
+        sides += 1
+
+        edge.sort()
+
+        for i in range(1, len(edge)):
+            if abs(edge[i] - edge[i - 1]) != 1:
+                sides += 1
+
+    return sides
+
 def calculate_price(arrangement):
     seen = set()
 
@@ -25,8 +39,7 @@ def calculate_price(arrangement):
         queue.append((row, column))
 
         area = 0
-        horizontal_sides = defaultdict(list)
-        vertical_sides = defaultdict(list)
+        edges = defaultdict(list)
 
         while queue:
             (r, c) = queue.popleft()
@@ -40,82 +53,26 @@ def calculate_price(arrangement):
             area += 1
 
             if r == 0 or (r > 0 and arrangement[r - 1][c] != plant):
-                if r - 1 in horizontal_sides:
-                    for side in horizontal_sides[r - 1]:
-                        if side[0] - 1 == c:
-                            side[0] -= 1
-                            break
-                        elif side[1] + 1 == c:
-                            side[1] += 1
-                            break
-                        elif side[0] <= c <= side[1]:
-                            break
-                    else:
-                        horizontal_sides[r - 1].append([c, c])
-                else:
-                    horizontal_sides[r - 1].append([c, c])
-                
+                edges[r, (0, -1)].append(c)
             else:
                 queue.append((r - 1, c))
 
             if r == rows - 1 or (r < rows - 1 and arrangement[r + 1][c] != plant):
-                if r + 1 in horizontal_sides:
-                    for side in horizontal_sides[r + 1]:
-                        if side[0] - 1 == c:
-                            side[0] -= 1
-                            break
-                        elif side[1] + 1 == c:
-                            side[1] += 1
-                            break
-                        elif side[0] <= c <= side[1]:
-                            break
-                    else:
-                        horizontal_sides[r + 1].append([c, c])
-                else:
-                    horizontal_sides[r + 1].append([c, c])
-
+                edges[r, (0, 1)].append(c)
             else:
                 queue.append((r + 1, c))
 
             if c == 0 or (c > 0 and arrangement[r][c - 1] != plant):
-                if c - 1 in vertical_sides:
-                    for side in vertical_sides[c - 1]:
-                        if side[0] - 1 == r:
-                            side[0] -= 1
-                            break
-                        elif side[1] + 1 == r:
-                            side[1] += 1
-                            break
-                        elif side[0] <= r <= side[1]:
-                            break
-                    else:
-                        vertical_sides[c - 1].append([r, r])
-                else:
-                    vertical_sides[c - 1].append([r, r])
+                edges[c, (-1, 0)].append(r)
             else:
                 queue.append((r, c - 1))
 
             if c == columns - 1 or (c < columns - 1 and arrangement[r][c + 1] != plant):
-                if c + 1 in vertical_sides:
-                    for side in vertical_sides[c + 1]:
-                        if side[0] - 1 == r:
-                            side[0] -= 1
-                            break
-                        elif side[1] + 1 == r:
-                            side[1] += 1
-                            break
-                        elif side[0] <= r <= side[1]:
-                            break
-                    else:
-                        vertical_sides[c + 1].append([r, r])
-                else:
-                    vertical_sides[c + 1].append([r, r])
+                edges[c, (1, 0)].append(r)
             else:
                 queue.append((r, c + 1))
 
-        print(arrangement[row][column], vertical_sides.values(), horizontal_sides.values())
-
-        return area * (len(vertical_sides.values()) + len(horizontal_sides.values()))
+        return area * count_sides(edges)
     
     total_price = 0
 
